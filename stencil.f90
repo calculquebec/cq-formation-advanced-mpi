@@ -10,6 +10,11 @@ program stencil
   character(len=32) :: arg
   double precision, allocatable :: aold(:,:), anew(:,:)
 
+  if(command_argument_count() < 3) then
+    write(*,'(A)')'Usage: mpiexec -n 1 ./stencil 255 1 65535 ; display heat.svg &'
+    stop
+  endif
+
   call get_command_argument(1, arg) ! nxn grid
   read(arg,*)n
   call get_command_argument(2, arg) ! energy to be injected per iteration
@@ -68,11 +73,11 @@ subroutine printarr(a,n)
   ! does nothing right now, should record each "frame" as image
   integer,intent(in) :: n
   double precision, intent(in) :: a(0:n+1,0:n+1)
-  integer, parameter :: size = 5
+  integer, parameter :: size = 1
   integer rgb, i, j
 
   open(7,FILE='heat.svg',STATUS='unknown',ACCESS='sequential')
-  write(7,'(A/A)')'<?xml version="1.0" encoding="UTF-8"?>','<svg xmlns="http://www.w3.org/2000/svg" version="1.1">'
+  write(7,'(A/A,I0,A,I0,A)')'<?xml version="1.0" encoding="UTF-8"?>','<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="',size*n,'" height="',size*n,'">'
 
   write(7,'(A,I0,A,I0,A)')'<rect x="0" y="0" width="',size*n,'" height="',size*n,'" style="stroke-width:1;fill:rgb(0,0,0);stroke:rgb(0,0,0)"/>'
   do i=1,n

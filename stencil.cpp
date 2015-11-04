@@ -8,9 +8,10 @@
 void printarr(double *a, int n) {
   // does nothing right now, should record each "frame" as image
   FILE *fp = fopen("heat.svg", "w");
-  const int size = 5;
+  const int size = 1;
 
-  fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">");
+  fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" ");
+  fprintf(fp, "width=\"%d\" height=\"%d\">", size*n, size*n);
 
   fprintf(fp, "\n<rect x=\"0\" y=\"0\" width=\"%i\" height=\"%i\" style=\"stroke-width:1;fill:rgb(0,0,0);stroke:rgb(0,0,0)\"/>", size*n, size*n);
   for(int i=1; i<n+1; ++i)
@@ -21,11 +22,14 @@ void printarr(double *a, int n) {
     }
   fprintf(fp, "</svg>\n");
 
-
   fclose(fp);
 }
 
 int main(int argc, char **argv) {
+  if (argc <= 3) {
+    printf("Usage: mpiexec -n 1 %s 255 1 65535 ; display heat.svg &\n", argv[0]);
+    exit(0);
+  }
 
   int n = atoi(argv[1]); // nxn grid
   int energy = atoi(argv[2]); // energy to be injected per iteration
