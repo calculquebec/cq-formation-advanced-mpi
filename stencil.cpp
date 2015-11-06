@@ -27,7 +27,7 @@ void printarr(double *a, int n) {
 
 int main(int argc, char **argv) {
   if (argc <= 3) {
-    printf("Usage: mpiexec -n 1 %s 255 1 65535 ; display heat.svg &\n", argv[0]);
+    printf("Usage: mpiexec -n 1 %s 240 1 64000 ; display heat.svg &\n", argv[0]);
     exit(0);
   }
 

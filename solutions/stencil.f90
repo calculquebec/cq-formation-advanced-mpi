@@ -11,7 +11,7 @@ program stencil
   double precision, allocatable :: aold(:,:), anew(:,:)
 
   if(command_argument_count() < 3) then
-    write(*,'(A)')'Usage: mpiexec -n 1 ./stencil 255 1 65535 ; display heat.svg &'
+    write(*,'(A)')'Usage: mpiexec -n 1 ./stencil 240 1 64000 ; display heat.svg &'
     stop
   endif
 
