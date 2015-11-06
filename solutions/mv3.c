@@ -81,8 +81,8 @@ int main(int argc, char **argv)
   MPI_Comm_split (grid_comm, grid_coords[1], grid_coords[0], &col_comm);
 
   // root node sends m and n out to other processors
-  MPI_Bcast(&m, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&n, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&m, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   if ((m < 1) || (n < 1)) {
      if (myid == 0) {

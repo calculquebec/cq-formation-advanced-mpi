@@ -65,8 +65,8 @@ int main(int argc, char **argv)
   }
 
   // root node sends m and n out to other processors
-  MPI_Bcast(&m, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&n, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&m, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   if ((m < 1) || (n < 1)) {
      if (myid == 0) {
