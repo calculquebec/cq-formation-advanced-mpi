@@ -152,7 +152,7 @@ subroutine update(aold,anew)
   heat=0d0 ! total heat in system
   do j=2,by-1
      do i=2,bx-1
-        anew(i,j)=anew(i,j)/2 + (aold(i-1,j)+aold(i+1,j)+aold(i,j-1)+aold(i,j+1))/8
+        anew(i,j)=aold(i,j)/2 + (aold(i-1,j)+aold(i+1,j)+aold(i,j-1)+aold(i,j+1))/8
         heat = heat + anew(i,j)
      enddo
   enddo
@@ -162,14 +162,14 @@ subroutine update(aold,anew)
   ! update outer grid points (two elements less per loop to avoid double update)
   do j=1,by,by-1
      do i=2,bx-1
-        anew(i,j)=anew(i,j)/2 + (aold(i-1,j)+aold(i+1,j)+aold(i,j-1)+aold(i,j+1))/8
+        anew(i,j)=aold(i,j)/2 + (aold(i-1,j)+aold(i+1,j)+aold(i,j-1)+aold(i,j+1))/8
         heat = heat + anew(i,j)
      enddo
   enddo
   do j=1,by
-     anew(1,j)=anew(1,j)/2 + (rbufwest(j)+aold(2,j)+aold(1,j-1)+aold(1,j+1))/8
+     anew(1,j)=aold(1,j)/2 + (rbufwest(j)+aold(2,j)+aold(1,j-1)+aold(1,j+1))/8
      heat = heat + anew(1,j)
-     anew(bx,j)=anew(bx,j)/2 + (aold(bx-1,j)+rbufeast(j)+aold(bx,j-1)+aold(bx,j+1))/8
+     anew(bx,j)=aold(bx,j)/2 + (aold(bx-1,j)+rbufeast(j)+aold(bx,j-1)+aold(bx,j+1))/8
      heat = heat + anew(bx,j)
   enddo
 

@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
     heat = 0.0;
     for(int j=2; j<by; ++j) {
       for(int i=2; i<bx; ++i) {
-        anew[ind(i,j)] = anew[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
+        anew[ind(i,j)] = aold[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
         heat += anew[ind(i,j)];
       }
     }
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
     // update outer grid points
     for(int i=2; i<bx; ++i) { // north, south -- two elements less per row (first and last) to avoid "double computation" in next loop!
       for(int j=1; j < by+1; j+=by-1) {
-        anew[ind(i,j)] = anew[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
+        anew[ind(i,j)] = aold[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
         heat += anew[ind(i,j)];
       }
     }
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
     // update outer grid points
     for(int i=1; i<bx+1; i+=bx-1) { // east, west -- full columns
       for(int j=1; j < by+1; ++j) {
-        anew[ind(i,j)] = anew[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
+        anew[ind(i,j)] = aold[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
         heat += anew[ind(i,j)];
       }
     }

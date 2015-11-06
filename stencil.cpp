@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     heat=0.0;
     for(int i=1; i<n+1; ++i) {
       for(int j=1; j<n+1; ++j) {
-        anew[ind(i,j)] = anew[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
+        anew[ind(i,j)] = aold[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
         heat += anew[ind(i,j)];
       }
     }

@@ -60,7 +60,7 @@ subroutine update(aold,anew)
   heat = 0d0
   do j=1,n
      do i=1,n
-        anew(i,j)=anew(i,j)/2 + (aold(i-1,j)+aold(i+1,j)+aold(i,j-1)+aold(i,j+1))/8
+        anew(i,j)=aold(i,j)/2 + (aold(i-1,j)+aold(i+1,j)+aold(i,j-1)+aold(i,j+1))/8
         heat = heat + anew(i,j)
      enddo
   enddo

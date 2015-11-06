@@ -50,8 +50,8 @@ int main(int argc, char **argv) {
         for(register int i=ib; i<min(ib+bs, n+1); ++i)
           #pragma ivdep
           for(register int j=jb; j<min(jb+bs,n+1); j+=2) {
-            register double x=anew[ind(i,j)]/2.0;
-            register double y=anew[ind(i,j+1)]/2.0;
+            register double x=aold[ind(i,j)]/2.0;
+            register double y=aold[ind(i,j+1)]/2.0;
             x = x + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/8.0;
             y = y + (aold[ind(i-1,j+1)] + aold[ind(i+1,j+1)] + aold[ind(i,j)] + aold[ind(i,j+2)])/8.0;
             heat += x + y;
