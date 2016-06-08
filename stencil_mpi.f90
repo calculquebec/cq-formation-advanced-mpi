@@ -1,6 +1,6 @@
 program stencil
 
-  use mpi_f08
+  use mpi
 
   implicit none
 
@@ -13,21 +13,21 @@ program stencil
   double precision rheat, heat, t
   double precision, allocatable :: aold(:,:), anew(:,:)
   double precision, allocatable :: sbufeast(:), sbufwest(:), rbufeast(:), rbufwest(:)
-  integer r, p, args(5), i
+  integer r, p, args(5), i, ierr
   integer px, py, rx, ry, north, south, east, west, bx, by, offx, offy
-  type(MPI_Comm) comm
+  integer comm
 
-  call MPI_Init()
+  call MPI_Init(ierr)
 
   comm = MPI_COMM_WORLD
-  call MPI_Comm_rank(comm, r)
-  call MPI_Comm_size(comm, p)
+  call MPI_Comm_rank(comm, r, ierr)
+  call MPI_Comm_size(comm, p, ierr)
 
   if (r==0) then
       ! argument checking
       if(command_argument_count() < 5) then
           write(*,'(A)')'usage: stencil_mpi <n> <energy> <niters> <px> <py>'
-          call MPI_Finalize()
+          call MPI_Finalize(ierr)
           stop
       endif
       
@@ -41,15 +41,15 @@ program stencil
       read(arg,*)px
       call get_command_argument(5, arg) ! 2nd dim processes
       read(arg,*)py
-      if(px * py /= p) call MPI_Abort(comm, 1) ! abort if px or py are wrong
-      if(mod(n,py) /= 0) call MPI_Abort(comm, 2) ! abort px needs to divide n
-      if(mod(n,px) /= 0) call MPI_Abort(comm, 3) ! abort py needs to divide n
+      if(px * py /= p) call MPI_Abort(comm, 1, ierr) ! abort if px or py are wrong
+      if(mod(n,py) /= 0) call MPI_Abort(comm, 2, ierr) ! abort px needs to divide n
+      if(mod(n,px) /= 0) call MPI_Abort(comm, 3, ierr) ! abort py needs to divide n
       
       ! distribute arguments
       args(:) = (/n, energy, niters, px,  py/)
-      call MPI_Bcast(args, 5, MPI_INTEGER, 0, comm)
+      call MPI_Bcast(args, 5, MPI_INTEGER, 0, comm, ierr)
   else
-      call MPI_Bcast(args, 5, MPI_INTEGER, 0, comm)
+      call MPI_Bcast(args, 5, MPI_INTEGER, 0, comm, ierr)
       n=args(1)
       energy=args(2)
       niters=args(3)
@@ -118,7 +118,7 @@ program stencil
   call MPI_Allreduce(heat, rheat, 1, MPI_DOUBLE_PRECISION, MPI_SUM, comm);
   if(r==0) write(*,'(A,I0,A,F12.6,A,F9.6)')"[",r,"] last heat: ",rheat," time: ",t
 
-  call MPI_Finalize()
+  call MPI_Finalize(ierr)
 
 contains
 
@@ -128,8 +128,8 @@ subroutine update(aold,anew)
   double precision, intent(inout) :: anew(0:bx+1,0:by+1)
 
   integer i,j
-  type(MPI_Request) reqs(8)
-  type(MPI_Status) status(8)
+  integer reqs(8)
+  integer status(MPI_STATUS_SIZE,8)
 
   ! refresh heat sources
   do i=1,locnsources
@@ -139,15 +139,15 @@ subroutine update(aold,anew)
   ! exchange data with neighbors
   sbufeast(:) = aold(bx,1:by) ! pack
   sbufwest(:) = aold(1,1:by)
-  call MPI_Isend(aold(1,1), bx, MPI_DOUBLE_PRECISION, north, 9, comm, reqs(1))
-  call MPI_Isend(aold(1,by), bx, MPI_DOUBLE_PRECISION, south, 9, comm, reqs(2))
-  call MPI_Isend(sbufeast, by, MPI_DOUBLE_PRECISION, east, 9, comm, reqs(3))
-  call MPI_Isend(sbufwest, by, MPI_DOUBLE_PRECISION, west, 9, comm, reqs(4))
-  call MPI_Irecv(aold(1,0), bx, MPI_DOUBLE_PRECISION, north, 9, comm, reqs(5))
-  call MPI_Irecv(aold(1,by+1), bx, MPI_DOUBLE_PRECISION, south, 9, comm, reqs(6))
-  call MPI_Irecv(rbufeast, by, MPI_DOUBLE_PRECISION, east, 9, comm, reqs(7))
-  call MPI_Irecv(rbufwest, by, MPI_DOUBLE_PRECISION, west, 9, comm, reqs(8))
-  call MPI_Waitall(8, reqs, status)
+  call MPI_Isend(aold(1,1), bx, MPI_DOUBLE_PRECISION, north, 9, comm, reqs(1),ierr)
+  call MPI_Isend(aold(1,by), bx, MPI_DOUBLE_PRECISION, south, 9, comm, reqs(2),ierr)
+  call MPI_Isend(sbufeast, by, MPI_DOUBLE_PRECISION, east, 9, comm, reqs(3),ierr)
+  call MPI_Isend(sbufwest, by, MPI_DOUBLE_PRECISION, west, 9, comm, reqs(4),ierr)
+  call MPI_Irecv(aold(1,0), bx, MPI_DOUBLE_PRECISION, north, 9, comm, reqs(5),ierr)
+  call MPI_Irecv(aold(1,by+1), bx, MPI_DOUBLE_PRECISION, south, 9, comm, reqs(6),ierr)
+  call MPI_Irecv(rbufeast, by, MPI_DOUBLE_PRECISION, east, 9, comm, reqs(7),ierr)
+  call MPI_Irecv(rbufwest, by, MPI_DOUBLE_PRECISION, west, 9, comm, reqs(8),ierr)
+  call MPI_Waitall(8, reqs, status, ierr)
   aold(bx+1,1:by) = rbufeast(:) ! unpack into ghost cells 
   aold(0,1:by) = rbufwest(:)
 

@@ -1,11 +1,11 @@
 program stencil
 
-  use mpi_f08
+  use mpi
 
   implicit none
 
   integer, parameter :: nsources = 3
-  integer n, energy, niters, iter, sources(2,nsources)
+  integer n, energy, niters, iter, sources(2,nsources), ierr
   double precision heat, t
   character(len=32) :: arg
   double precision, allocatable :: aold(:,:), anew(:,:)
@@ -25,7 +25,7 @@ program stencil
   aold(:,:) = 0d0
   anew(:,:) = 0d0
 
-  call MPI_Init()
+  call MPI_Init(ierr)
 
   sources = reshape([n/2,n/2,n/3,n/3,n*4/5,n*8/9],shape(sources))
   
@@ -46,7 +46,7 @@ program stencil
   endif
   write(*,'(A,F12.6,A,F9.6)')"last heat: ",heat," time: ",t
 
-  call MPI_Finalize()
+  call MPI_Finalize(ierr)
 
 contains
 
@@ -77,9 +77,11 @@ subroutine printarr(a,n)
   integer rgb, i, j
 
   open(7,FILE='heat.svg',STATUS='unknown',ACCESS='sequential')
-  write(7,'(A/A,I0,A,I0,A)')'<?xml version="1.0" encoding="UTF-8"?>','<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="',size*n,'" height="',size*n,'">'
+  write(7,'(A/A,I0,A,I0,A)')'<?xml version="1.0" encoding="UTF-8"?>',&
+  '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="',size*n,'" height="',size*n,'">'
 
-  write(7,'(A,I0,A,I0,A)')'<rect x="0" y="0" width="',size*n,'" height="',size*n,'" style="stroke-width:1;fill:rgb(0,0,0);stroke:rgb(0,0,0)"/>'
+  write(7,'(A,I0,A,I0,A)')'<rect x="0" y="0" width="',size*n,'" height="',&
+   size*n,'" style="stroke-width:1;fill:rgb(0,0,0);stroke:rgb(0,0,0)"/>'
   do i=1,n
      do j=1,n
         if (a(i,j) > 0) then
