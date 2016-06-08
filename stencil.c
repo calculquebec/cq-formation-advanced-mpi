@@ -3,7 +3,8 @@
 #include <math.h>
 #include <mpi.h>
 
-#define ind(i,j) (i)*(n+2)+j
+// row-major order
+#define ind(i,j) (j)*n+i
 
 void printarr(double *a, int n) {
   // does nothing right now, should record each "frame" as image
@@ -27,7 +28,7 @@ void printarr(double *a, int n) {
 
 int main(int argc, char **argv) {
   if (argc <= 3) {
-    printf("Usage: mpiexec -n 1 %s 240 1 64000 ; display heat.svg &\n", argv[0]);
+    printf("Usage: mpiexec -n 1 %s 255 1 65535 ; display heat.svg &\n", argv[0]);
     exit(0);
   }
 
@@ -40,15 +41,15 @@ int main(int argc, char **argv) {
 
   MPI_Init(NULL, NULL);
 
-  const int nsources=3;
+  #define nsources 3
   int sources[nsources][2] = {{n/2,n/2}, {n/3,n/3}, {n*4/5,n*8/9}};
   
   double heat=0.0; // total heat in system
   double t=-MPI_Wtime();
   for(int iter=0; iter<niters; ++iter) {
     heat=0.0;
-    for(int i=1; i<n+1; ++i) {
-      for(int j=1; j<n+1; ++j) {
+    for(int j=1; j<n+1; ++j) {
+      for(int i=1; i<n+1; ++i) {
         anew[ind(i,j)] = aold[ind(i,j)]/2.0 + (aold[ind(i-1,j)] + aold[ind(i+1,j)] + aold[ind(i,j-1)] + aold[ind(i,j+1)])/4.0/2.0;
         heat += anew[ind(i,j)];
       }
